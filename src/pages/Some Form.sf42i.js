@@ -33,6 +33,9 @@ $w.onReady(async function () {
     const userCountryResponse = await getUserCountry();
 	console.log('userCountryResponse', userCountryResponse);
 
+    const applicationResponse = await createApplication('Test', '380971234567');
+	console.log('onReady.applicationResponse', applicationResponse);
+
     $w("#firstName").value = "John";
     $w("#lastName").value = "Smith";
 
@@ -52,10 +55,10 @@ $w.onReady(async function () {
         const { fields } = event;
 
         let fullName = getFieldValue('firstName', fields) + ' ' + getFieldValue('lastName', fields);
-        let phone = getFieldValue('phone', fields);
+        let phone = getFieldValue('phone', fields);            
 
         const applicationResponse = await createApplication(fullName, phone);
-		console.log('applicationResponse', applicationResponse);
+		console.log('onWixFormSubmit.applicationResponse', applicationResponse);
 
         return event.fields;
     });

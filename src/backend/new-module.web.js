@@ -8,16 +8,6 @@ Learn more at https://dev.wix.com/docs/develop-websites/articles/coding-with-vel
 
 ****/
 
-/**** Call the sample multiply function below by pasting the following into your page code:
-
-import { multiply } from 'backend/new-module.web';
-
-$w.onReady(async function () {
-   console.log(await multiply(4,5));
-});
-
-****/
-
 import { fetch } from 'wix-fetch';
 import { Permissions, webMethod } from "wix-web-module";
 
@@ -42,6 +32,7 @@ export const createApplication = webMethod(
         const options = {
             method: 'POST',
             headers: {
+                'X-Request-Source': 'Wix',
                 'Content-Type': 'application/json',
             },
             data: JSON.stringify({
@@ -50,12 +41,18 @@ export const createApplication = webMethod(
             })
         };
 
-        return fetch(createApplicationUrl, options).then(response => response.json());
-    });
+        const url = new URL(createApplicationUrl);
 
-export const multiply = webMethod(
-    Permissions.Anyone,
-    (factor1, factor2) => {
-        return factor1 * factor2
-    }
-);
+        url.searchParams.set('ts', Date.now().toString());
+        url.searchParams.set('source', 'wix');        
+
+        return fetch(url.toString(), options).then((httpResponse) => {
+            if (httpResponse.ok) {
+              return httpResponse.json();
+            } else {
+              return Promise.reject("Fetch did not succeed");
+            }
+          })
+          .then((json) => console.log(json.someKey))
+          .catch((err) => console.log(err));
+    });
